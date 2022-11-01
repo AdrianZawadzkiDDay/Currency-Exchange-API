@@ -21,7 +21,6 @@ public class ExchangeRateService {
     private static Logger logger = LoggerFactory.getLogger(ExchangeRateService.class);
     public BigDecimal getCurrenciesRate(String from, String to) throws IOException {
         String url_str = "https://api.exchangerate.host/convert?from=" + from + "&to=" + to;
-        // https://api.exchangerate.host/convert?from=PLN&to=EUR
         URL url = new URL(url_str);
         HttpURLConnection request = (HttpURLConnection) url.openConnection();
         request.connect();

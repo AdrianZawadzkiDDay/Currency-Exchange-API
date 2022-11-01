@@ -6,7 +6,6 @@ import com.example.demo.exception.AccountAlreadyExistException;
 import com.example.demo.exception.AccountNoExistException;
 import com.example.demo.exception.InsufficientFundsException;
 import com.example.demo.model.Account;
-import com.example.demo.repositories.AccountRepository;
 import com.example.demo.repositories.InMemoryAccountRepository;
 import com.example.demo.service.AccountService;
 import com.example.demo.service.ExchangeRateService;
@@ -14,7 +13,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -22,10 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.UUID;
-
-import static org.mockito.Mockito.mock;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
