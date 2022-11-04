@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.common.Currency;
 import com.example.demo.dto.AccountDTO;
 import com.example.demo.dto.TransferMoneyDTO;
 import com.example.demo.exception.AccountAlreadyExistException;
@@ -76,6 +77,11 @@ public class AccountsController {
             return new ResponseEntity("Account with this id already exist", HttpStatus.CONFLICT);
 
         }
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<Account>> findByCurrency(@RequestParam Currency currency) {
+        return new ResponseEntity<List<Account>>(accountService.findByCurrency(currency), HttpStatus.OK);
     }
 
 }

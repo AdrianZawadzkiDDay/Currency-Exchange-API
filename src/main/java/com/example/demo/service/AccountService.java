@@ -6,14 +6,16 @@ import com.example.demo.exception.AccountAlreadyExistException;
 import com.example.demo.exception.AccountNoExistException;
 import com.example.demo.exception.InsufficientFundsException;
 import com.example.demo.model.Account;
-import com.example.demo.repositories.AccountRepository;
+import com.example.demo.repositories.AccountJpaRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,17 +26,16 @@ public class AccountService {
 
     private static Logger logger = LoggerFactory.getLogger(AccountService.class);
 
-    private final AccountRepository accountRepository;
+    private final AccountJpaRepository accountRepository;
     private final ExchangeRateService exchangeRateService;
 
-    @Autowired
-    public AccountService(AccountRepository accountRepository, ExchangeRateService exchangeRateService) {
+    public AccountService(AccountJpaRepository accountRepository, ExchangeRateService exchangeRateService) {
         this.accountRepository = accountRepository;
         this.exchangeRateService = exchangeRateService;
     }
 
     public synchronized Account addAccount(AccountDTO accountDTO) throws AccountAlreadyExistException {
-        Optional<Account> optionalAccount = accountRepository.checkIfExist(accountDTO.getId());
+        Optional<Account> optionalAccount = accountRepository.findById(accountDTO.getId());
         if(optionalAccount.isPresent()) {
             throw new AccountAlreadyExistException();
         }
@@ -47,9 +48,17 @@ public class AccountService {
         return new Account(accountDTO.getId(), accountDTO.getUserId(), accountDTO.getCurrency(), BigDecimal.valueOf(accountDTO.getBalance()));
     }
 
-    public synchronized void transferMoney(UUID accountFromId, UUID accountToId, BigDecimal amount) throws AccountNoExistException, IOException, InsufficientFundsException {
-        Account accountFrom = accountRepository.findById(accountFromId);
-        Account accountTo = accountRepository.findById(accountToId);
+    @Transactional
+    public synchronized void transferMoney(UUID accountFromId, UUID accountToId, BigDecimal amount) throws IOException, InsufficientFundsException, AccountNoExistException {
+        Optional<Account> accountFromOptional = accountRepository.findById(accountFromId);
+        Optional<Account> accountToOptional = accountRepository.findById(accountToId);
+
+        if(accountFromOptional.isEmpty() || accountToOptional.isEmpty()) {
+            throw new AccountNoExistException();
+        }
+
+        Account accountFrom = accountFromOptional.get();
+        Account accountTo= accountToOptional.get();
 
         BigDecimal accountFromBalance = accountFrom.getBalance();
         if(accountFromBalance.compareTo(amount) < 0) {
@@ -63,23 +72,16 @@ public class AccountService {
         BigDecimal newBalanceForFromAccount = accountFromBalance.subtract(amount);
         BigDecimal newBalanceForToAccount = accountToBalance.add(amount.multiply(rate));
 
-        Account updatedAccountFrom = getNewAccount(accountFrom, newBalanceForFromAccount);
-        Account updatedAccountTo = getNewAccount(accountTo, newBalanceForToAccount);
-
-        accountRepository.update(updatedAccountFrom);
-        accountRepository.update(updatedAccountTo);
-    }
-
-    private Account getNewAccount(Account oldAccount, BigDecimal newBalance) {
-        return new Account(oldAccount.getId(), oldAccount.getUserId(), oldAccount.getCurrency(), newBalance);
-    }
-
-    public BigDecimal getCurrenciesRate(String from, String to) throws IOException {
-        return exchangeRateService.getCurrenciesRate(from, to);
+        accountRepository.updateBalance(accountFrom.getId(), newBalanceForFromAccount);
+        accountRepository.updateBalance(accountTo.getId(), newBalanceForToAccount);
     }
 
     public List<Account> getAll() {
         return accountRepository.findAll();
+    }
+
+    public List<Account> findByCurrency(Currency currency) {
+        return accountRepository.findAllByCurrency(currency).orElse(new ArrayList<>());
     }
 
 

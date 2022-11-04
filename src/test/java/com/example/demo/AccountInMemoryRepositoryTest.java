@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public class AccountRepositoryTest {
+public class AccountInMemoryRepositoryTest {
 
     private static final UUID UUID_1 = UUID.fromString("4181661a-bfc7-485c-8582-8ec74eb17ee8");
     private static final UUID UUID_2 = UUID.fromString("ceb396e2-a5e5-4244-ad61-3699a9035570");
