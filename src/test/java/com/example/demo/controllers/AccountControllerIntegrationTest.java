@@ -4,18 +4,19 @@ package com.example.demo.controllers;
 import com.example.demo.common.Currency;
 import com.example.demo.model.Account;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.flywaydb.core.Flyway;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @SpringBootTest
@@ -29,28 +30,30 @@ public class AccountControllerIntegrationTest {
     ObjectMapper objectMapper;
 
     @Test
-    public void shouldReturnInitialAccount() throws Exception {
+    public void shouldReturnInitialAccounts() throws Exception {
         MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/accounts/all"))
                 .andExpect(MockMvcResultMatchers.status().is(200)).andReturn();
         Account[] accounts = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Account[].class);
         Assertions.assertEquals(Currency.PLN, accounts[0].getCurrency());
-
+        Assertions.assertEquals(Currency.EUR, accounts[1].getCurrency());
     }
 
-    // 0f5ab74a-033f-4ad9-9b2e-e457741092af
     @Test
     public void shouldReturn404WhenGetToWrongEndpoint() throws Exception {
        mockMvc.perform(MockMvcRequestBuilders.get("/accounts/wrongEndpoint"))
                 .andExpect(MockMvcResultMatchers.status().is(404)).andReturn();
     }
 
+    @Test
+    public void shouldAddNewAccount() throws Exception {
+        Account account = new Account(UUID.fromString("0f5ab74a-033f-4ad9-9b2e-e457741092af"), 3L, Currency.USD, BigDecimal.valueOf(10000.00));
 
-//    @AfterEach
-//    public void get() {
-//        Flyway.configure()
-//                .cleanDisabled(false)
-//                .load();
-//        flyway.clean();
-//        flyway.migrate();
-//    }
+        MvcResult mvcResult = mockMvc.perform(
+                        MockMvcRequestBuilders.post("/accounts/add")
+                                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                .content(objectMapper.writeValueAsString(account))
+                )
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful()).andReturn();
+    }
+
 }

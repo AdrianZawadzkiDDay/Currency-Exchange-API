@@ -7,7 +7,6 @@ import com.example.demo.exception.AccountNoExistException;
 import com.example.demo.exception.InsufficientFundsException;
 import com.example.demo.model.Account;
 import com.example.demo.repositories.AccountJpaRepository;
-import com.example.demo.repositories.InMemoryAccountRepository;
 import com.example.demo.service.AccountService;
 import com.example.demo.service.ExchangeRateService;
 import org.junit.jupiter.api.Assertions;
@@ -71,6 +70,20 @@ public class AccountServiceTest {
         accountService.transferMoney(UUID_1, UUID_2, BigDecimal.valueOf(5000.00));
 
         verify(repository, times(2)).updateBalance(any(), any());
+    }
+
+    @Test
+    public void shouldInvokeMethodUpdateBalanceWithProperValues() throws IOException, AccountNoExistException, InsufficientFundsException {
+        when(repository.findById(UUID_1)).thenReturn(Optional.of(new Account(UUID_1, 1L, Currency.PLN, BigDecimal.valueOf(10000.00))));
+        when(repository.findById(UUID_2)).thenReturn(Optional.of(new Account(UUID_2, 2L, Currency.EUR, BigDecimal.valueOf(10000.00))));
+
+        Mockito.when(exchangeRateService.getCurrenciesRate(Currency.PLN.name(), Currency.EUR.name()))
+                .thenReturn(BigDecimal.valueOf(0.20));
+
+        accountService.transferMoney(UUID_1, UUID_2, BigDecimal.valueOf(5000.00));
+
+        verify(repository, times(1)).updateBalance(UUID_1, new BigDecimal("5000.0"));
+        verify(repository, times(1)).updateBalance(UUID_2, new BigDecimal("11000.00"));
     }
 
 }

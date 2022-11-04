@@ -1,5 +1,7 @@
 # RESTful API that performs finds transfer between two accounts with currency exchange.
 
+#### h2 db available at http://localhost:8080/h2-console
+
 ![logs](https://user-images.githubusercontent.com/45298383/199191843-f9312b77-3cf4-46c8-ab9d-8dc229a40bb5.PNG)
 ![tests](https://user-images.githubusercontent.com/45298383/199191909-18ff29a5-ea3f-42c0-b5d8-2d252b876168.PNG)
 ![accountCreated](https://user-images.githubusercontent.com/45298383/199191933-3a236023-1eb6-462a-8773-31d88f10ca18.PNG)
