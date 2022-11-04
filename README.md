@@ -2,8 +2,15 @@
 
 #### h2 db available at http://localhost:8080/h2-console
 
-![logs](https://user-images.githubusercontent.com/45298383/199191843-f9312b77-3cf4-46c8-ab9d-8dc229a40bb5.PNG)
-![tests](https://user-images.githubusercontent.com/45298383/199191909-18ff29a5-ea3f-42c0-b5d8-2d252b876168.PNG)
+
+
+#### initial accounts
+![initial_db_data](https://user-images.githubusercontent.com/45298383/200055684-ba588da5-8f2e-4c4c-b8b0-a1ca10e36579.PNG)
+
+
+#### 8 tests: 4-unit 3-integration 1-E2E
+![integrationTests](https://user-images.githubusercontent.com/45298383/200055712-fc2b3fb8-8484-487f-853f-7c165811b178.PNG)
+
 ![accountCreated](https://user-images.githubusercontent.com/45298383/199191933-3a236023-1eb6-462a-8773-31d88f10ca18.PNG)
 ![accountsBeforeTransfer](https://user-images.githubusercontent.com/45298383/199191969-8e6733dd-3061-444e-85ca-76e4baec181f.PNG)
 ![transfer](https://user-images.githubusercontent.com/45298383/199192009-52ceb16e-e6ab-41ae-81e1-02992710a4b3.PNG)
